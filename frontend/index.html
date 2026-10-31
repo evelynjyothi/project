@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Secret Imposter</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<main class="container">
+
+    <header class="top-bar">
+        <div class="logo">
+            <span>🎭</span> Secret Imposter
+        </div>
+
+        <div class="online-status">
+            <span class="status-dot"></span>
+            Multiplayer Game
+        </div>
+    </header>
+
+
+    <!-- HOME SCREEN -->
+
+    <section id="homeScreen">
+
+        <section class="hero">
+
+            <div class="game-icon">🎭</div>
+
+            <p class="eyebrow">THE ULTIMATE SOCIAL DEDUCTION GAME</p>
+
+            <h1>
+                Trust Nobody.<br>
+                <span>Find the Imposter.</span>
+            </h1>
+
+            <p class="description">
+                Everyone knows the secret word except one person.
+                Can you identify the imposter before they fool everyone?
+            </p>
+
+            <div class="action-buttons">
+
+                <button id="createBtn" class="primary-btn">
+                    Create Game ＋
+                </button>
+
+                <button id="joinBtn" class="secondary-btn">
+                    Join Game →
+                </button>
+
+            </div>
+
+            <p class="player-info">
+                👥 3–8 Players • 🌍 Play from anywhere
+            </p>
+
+        </section>
+
+
+        <section class="how-to-play">
+
+            <h2>How to Play</h2>
+
+            <div class="steps">
+
+                <div class="step-card">
+                    <div class="step-icon">🔐</div>
+                    <h3>Get Your Word</h3>
+                    <p>Everyone receives a secret word except the imposter.</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-icon">💬</div>
+                    <h3>Give Clues</h3>
+                    <p>Describe your word without revealing it directly.</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-icon">🕵️</div>
+                    <h3>Find the Imposter</h3>
+                    <p>Discuss, vote and discover who is hiding the truth.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </section>
+
+
+    <!-- CREATE / JOIN DIALOG -->
+
+    <dialog id="playerDialog" class="game-dialog">
+
+        <form id="playerForm">
+
+            <button type="button" id="closeDialog" class="close-btn">
+                ×
+            </button>
+
+            <h2 id="dialogTitle">Create Game</h2>
+
+            <p id="dialogDescription">
+                Enter your username to create a new room.
+            </p>
+
+            <label for="username">Your username</label>
+
+            <input
+                type="text"
+                id="username"
+                placeholder="Enter username"
+                maxlength="20"
+                required
+            >
+
+            <div id="roomCodeGroup" hidden>
+
+                <label for="roomCode">Room code</label>
+
+                <input
+                    type="text"
+                    id="roomCode"
+                    placeholder="Enter 4-character code"
+                    maxlength="4"
+                    autocomplete="off"
+                >
+
+            </div>
+
+            <p id="formError" class="error-message"></p>
+
+            <button type="submit" id="submitBtn" class="primary-btn">
+                Continue
+            </button>
+
+        </form>
+
+    </dialog>
+
+
+    <!-- WAITING LOBBY -->
+
+    <section id="lobbyScreen" hidden>
+
+        <div class="lobby-header">
+
+            <p class="eyebrow">YOUR GAME ROOM</p>
+
+            <h1>Waiting for Players</h1>
+
+            <p class="description">
+                Share your room code with friends so they can join.
+            </p>
+
+        </div>
+
+
+        <div class="room-code-card">
+
+            <p>ROOM CODE</p>
+
+            <div class="room-code-row">
+
+                <h2 id="roomCodeDisplay">----</h2>
+
+                <button id="copyCodeBtn" class="copy-btn">
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="players-section">
+
+            <div class="players-heading">
+
+                <h2>Players</h2>
+
+                <span id="playerCount">0 / 8</span>
+
+            </div>
+
+            <div id="playerList" class="player-list"></div>
+
+        </div>
+
+
+        <div class="waiting-message">
+            <span class="status-dot"></span>
+            Waiting for more players to join...
+        </div>
+
+        <p class="minimum-info">
+            At least 3 players are required to start.
+        </p>
+
+        <button id="leaveBtn" class="secondary-btn leave-btn">
+            Back to Home
+        </button>
+
+    </section>
+
+
+    <footer>
+        Secret Imposter © 2026 | Think carefully. Trust carefully.
+    </footer>
+
+</main>
+
+<script src="/static/script.js?v=2"></script>
+
+</body>
+</html>
