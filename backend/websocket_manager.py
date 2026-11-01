@@ -43,6 +43,21 @@ class ConnectionManager:
         for player_id in disconnected_players:
             self.disconnect(room_code, player_id)
 
+    async def send_to_player(self, room_code, player_id, message):
+
+        websocket = self.active_connections.get(room_code, {}).get(player_id)
+
+        if websocket is None:
+            return False
+
+        try:
+            await websocket.send_json(message)
+            return True
+
+        except Exception:
+            self.disconnect(room_code, player_id)
+            return False
+
 
 # Create one shared connection manager
 manager = ConnectionManager()

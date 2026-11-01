@@ -16,7 +16,14 @@ from backend.game_manager import (
     join_room,
     get_room_state,
     get_player,
-    set_player_connection
+    set_player_connection,
+    start_game,
+    get_player_game_info,
+    add_chat_message,
+    start_voting,
+    cast_vote,
+    has_player_voted,
+    start_next_round
 )
 
 from backend.websocket_manager import manager
@@ -168,12 +175,99 @@ async def room_websocket(
         }
     )
 
+    game_info = get_player_game_info(room_code, player_id)
+    if game_info:
+        await manager.send_to_player(
+            room_code,
+            player_id,
+            {"type": "private_role", **game_info}
+        )
+    if has_player_voted(room_code, player_id):
+        await manager.send_to_player(
+            room_code,
+            player_id,
+            {"type": "vote_received"}
+        )
+
     try:
 
         while True:
 
-            # Keep connection alive and wait for client messages
-            await websocket.receive_text()
+            message = await websocket.receive_json()
+
+            if not isinstance(message, dict):
+                await websocket.send_json({
+                    "type": "error",
+                    "message": "Invalid message."
+                })
+                continue
+
+            action = message.get("type")
+            try:
+                if action == "start_game":
+                    start_game(room_code, player_id)
+                elif action == "chat_message":
+                    chat_message = add_chat_message(
+                        room_code,
+                        player_id,
+                        message.get("text", "")
+                        if isinstance(message.get("text"), str)
+                        else ""
+                    )
+                    await manager.broadcast(
+                        room_code,
+                        {"type": "chat_message", "message": chat_message}
+                    )
+                    continue
+                elif action == "start_voting":
+                    start_voting(room_code, player_id)
+                elif action == "play_again":
+                    start_next_round(room_code, player_id)
+                elif action == "vote":
+                    cast_vote(room_code, player_id, message.get("target_id"))
+                    await manager.send_to_player(
+                        room_code,
+                        player_id,
+                        {"type": "vote_received"}
+                    )
+                else:
+                    await websocket.send_json({
+                        "type": "error",
+                        "message": "Unknown game action."
+                    })
+                    continue
+            except ValueError as error:
+                await websocket.send_json({
+                    "type": "error",
+                    "message": str(error)
+                })
+                continue
+
+            await manager.broadcast(
+                room_code,
+                {
+                    "type": "room_update",
+                    "room": get_room_state(room_code)
+                }
+            )
+
+            if action in ("start_game", "play_again"):
+                await manager.broadcast(
+                    room_code,
+                    {"type": "game_started"}
+                )
+                room = get_room_state(room_code)
+                for room_player in room["players"]:
+                    game_info = get_player_game_info(
+                        room_code,
+                        room_player["player_id"]
+                    )
+                    if game_info:
+                        await manager.send_to_player(
+                            room_code,
+                            room_player["player_id"],
+                            {"type": "private_role", **game_info}
+                        )
 
     except WebSocketDisconnect:
 
